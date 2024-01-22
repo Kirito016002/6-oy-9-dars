@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from . import models
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 def main (reqruest):
     return render(reqruest, 'index.html')
@@ -63,3 +65,27 @@ def equpment_create(request):
 def equpment_delete(request, id):
     models.My_equpment.objects.get(id=id).delete()
     return redirect('equpment')
+
+
+# User 
+
+def log_in(request):
+    if request.method == "POST":
+        username = request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        auth = authenticate(username=username, email=email, password=password)
+        if auth:
+            return redirect('dashboard')
+    return render(request, "dashboard/authentication/login.html")    
+
+
+def sign_up(request):
+    if request.method == "POST":
+        User.objects.create_user(
+            username = request.POST['username'],
+            email = request.POST['email'],
+            password = request.POST['password'],
+        )
+        return redirect('dashboard')
+    return render(request, "dashboard/authentication/sign-up.html")    
